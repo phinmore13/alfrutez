@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proyecto de Transformación Operativa Alfrutez</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/feather-icons"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        brand: {
+                            dark: '#022c22', // Verde esmeralda muy oscuro
+                            primary: '#059669', // Verde esmeralda
+                            accent: '#65a30d', // Verde lima/aguacate
+                            light: '#ecfdf5', // Fondo esmeralda claro
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Ocultar scrollbar para las pestañas en móviles */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Transiciones suaves para pestañas */
+        .tab-content { display: none; opacity: 0; transition: opacity 0.3s ease-in-out; }
+        .tab-content.active { display: block; opacity: 1; }
+
+        /* Clases para la animación de diagnóstico al centro */
+        .wrapper-hidden {
+            width: 0 !important;
+            padding: 0 !important;
+            opacity: 0 !important;
+            transform: scale(0.8) !important;
+            pointer-events: none !important;
+            overflow: hidden !important;
+        }
+        .wrapper-expanded {
+            width: 100% !important;
+            max-width: 48rem !important; /* Limitar ancho para que se vea elegante en el centro */
+        }
+    </style>
+</head>
+<body class="font-sans bg-slate-50 text-slate-800 antialiased selection:bg-brand-accent selection:text-white">
+
+    <nav class="w-full bg-brand-dark border-b border-brand-primary/20 sticky top-0 z-50 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex-shrink-0 flex items-center">
+                    <span class="text-white font-bold text-xl tracking-tight">Alfrutez<span class="text-brand-accent">.</span></span>
+                </div>
+
+                <div class="hidden md:flex space-x-8">
+                    <div class="relative group">
+                        <button type="button" class="text-slate-300 group-hover:text-white inline-flex items-center px-1 pt-1 text-sm font-semibold transition-colors">
+                            Fases del Proyecto
+                            <i data-feather="chevron-down" class="ml-1 w-4 h-4 text-slate-400 group-hover:text-brand-accent transition-transform duration-300 group-hover:rotate-180"></i>
+                        </button>
+
+                        <div class="absolute left-0 mt-2 w-80 rounded-xl shadow-2xl bg-slate-900 border border-slate-700 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 ease-in-out transform origin-top-left overflow-hidden z-50">
+                            <div class="py-2" role="menu" aria-orientation="vertical">
+                                <!-- Enlace Modificado a la nueva sección -->
+                                <a href="#inmersion-detalle" class="block px-5 py-3 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors group/item">
+                                    <span class="font-bold text-brand-accent block mb-0.5 group-hover/item:text-brand-primary">Fase 1</span>
+                                    Inmersión Diagnóstica In-House
+                                </a>
+                                <a href="#solucion" onclick="navToTab(1)" class="block px-5 py-3 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors group/item">
+                                    <span class="font-bold text-brand-accent block mb-0.5 group-hover/item:text-brand-primary">Fase 2</span>
+                                    Arquitectura y Escalamiento
+                                </a>
+                                <a href="#solucion" onclick="navToTab(2)" class="block px-5 py-3 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors group/item">
+                                    <span class="font-bold text-brand-accent block mb-0.5 group-hover/item:text-brand-primary">Fase 3</span>
+                                    Sistema Operativo y Tecnológico (ERP)
+                                </a>
+                                <a href="#solucion" onclick="navToTab(3)" class="block px-5 py-3 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors group/item">
+                                    <span class="font-bold text-brand-accent block mb-0.5 group-hover/item:text-brand-primary">Fase 4</span>
+                                    Inteligencia Logística y Automatizaciones
+                                </a>
+                                <a href="#solucion" onclick="navToTab(4)" class="block px-5 py-3 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors group/item">
+                                    <span class="font-bold text-brand-accent block mb-0.5 group-hover/item:text-brand-primary">Fase 5</span>
+                                    Transformación Digital Comercial
+                                </a>
+                                <a href="#solucion" onclick="navToTab(5)" class="block px-5 py-3 text-sm text-slate-300 hover:bg-slate-800 hover:text-white transition-colors group/item">
+                                    <span class="font-bold text-brand-accent block mb-0.5 group-hover/item:text-brand-primary">Fase 6</span>
+                                    Rescate de Escencia Viva
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex md:hidden">
+                    <button id="mobile-menu-btn" type="button" class="text-slate-300 hover:text-white focus:outline-none">
+                        <i data-feather="menu"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div id="mobile-menu" class="md:hidden hidden pb-4 transition-all duration-300 ease-in-out">
+                <div class="space-y-1 px-2 pt-2 pb-3 bg-slate-900 rounded-xl border border-slate-800 shadow-xl mt-2">
+                    <div class="px-3 py-2 text-xs font-bold text-slate-500 uppercase tracking-wider border-b border-slate-800 mb-2">Fases del Proyecto</div>
+                    <!-- Enlace Modificado a la nueva sección -->
+                    <a href="#inmersion-detalle" onclick="closeMobileMenu()" class="block px-3 py-2 text-sm text-slate-300 hover:bg-slate-800 hover:text-white rounded-md"><span class="text-brand-accent font-bold">1.</span> Inmersión Diagnóstica</a>
+                    <a href="#solucion" onclick="navToTab(1); closeMobileMenu()" class="block px-3 py-2 text-sm text-slate-300 hover:bg-slate-800 hover:text-white rounded-md"><span class="text-brand-accent font-bold">2.</span> Arquitectura & Escalamiento</a>
+                    <a href="#solucion" onclick="navToTab(2); closeMobileMenu()" class="block px-3 py-2 text-sm text-slate-300 hover:bg-slate-800 hover:text-white rounded-md"><span class="text-brand-accent font-bold">3.</span> Sistema Operativo (ERP)</a>
+                    <a href="#solucion" onclick="navToTab(3); closeMobileMenu()" class="block px-3 py-2 text-sm text-slate-300 hover:bg-slate-800 hover:text-white rounded-md"><span class="text-brand-accent font-bold">4.</span> Inteligencia Logística</a>
+                    <a href="#solucion" onclick="navToTab(4); closeMobileMenu()" class="block px-3 py-2 text-sm text-slate-300 hover:bg-slate-800 hover:text-white rounded-md"><span class="text-brand-accent font-bold">5.</span> Transformación Digital</a>
+                    <a href="#solucion" onclick="navToTab(5); closeMobileMenu()" class="block px-3 py-2 text-sm text-slate-300 hover:bg-slate-800 hover:text-white rounded-md"><span class="text-brand-accent font-bold">6.</span> Rescate Escencia Viva</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <header class="relative bg-brand-dark overflow-hidden">
+        <div class="absolute inset-0 bg-gradient-to-br from-brand-dark to-black opacity-90"></div>
+        <div class="absolute top-0 right-0 -mt-20 -mr-20 w-80 h-80 bg-brand-primary rounded-full blur-3xl opacity-20"></div>
+        <div class="absolute bottom-0 left-0 -mb-20 -ml-20 w-72 h-72 bg-brand-accent rounded-full blur-3xl opacity-20"></div>
+
+        <div class="relative max-w-7xl mx-auto px-6 py-24 lg:py-32 flex flex-col items-center text-center z-10">
+            <span class="text-brand-accent font-semibold tracking-wider uppercase text-sm mb-4">Arquitectura de Negocios & Operaciones</span>
+            <h1 class="text-4xl md:text-6xl font-extrabold text-white mb-6 leading-tight">
+                Proyecto de transformación <br>
+                <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-primary to-brand-accent">Operativa Alfrutez</span>
+            </h1>
+            <p class="text-xl text-slate-300 max-w-3xl mb-8 font-light italic">
+                "El miedo a crecer desaparece cuando los cimientos son sólidos."
+            </p>
+            
+            <div class="bg-white/10 backdrop-blur-md border border-white/20 p-8 rounded-2xl max-w-4xl text-left shadow-2xl mb-10">
+                <h3 class="text-white font-semibold text-lg mb-4 flex items-center">
+                    <i data-feather="target" class="mr-2 text-brand-accent"></i> Objetivo estratégico
+                </h3>
+                <p class="text-slate-200 text-sm md:text-base leading-relaxed">
+                    El objetivo de esta propuesta es transformar el miedo en control y la operación manual en un motor automatizado, escalable y predecible, adaptando metodologías ágiles de alto rendimiento a su operación logística y comercial. No entregaremos manuales muertos; construiremos un sistema vivo, ágil y automatizado que empodere a su equipo actual y blinde la operación ante la rotación.
+                </p>
+            </div>
+
+            <a href="#solucion" class="bg-brand-accent hover:bg-brand-primary text-white font-bold py-4 px-8 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg shadow-brand-accent/30 flex items-center">
+                Ver Propuesta Integral <i data-feather="arrow-down" class="ml-2"></i>
+            </a>
+        </div>
+    </header>
+
+    <section id="diagnostico" class="py-20 px-6 max-w-7xl mx-auto">
+        <div class="text-center mb-16">
+            <h2 class="text-3xl md:text-4xl font-bold text-brand-dark mb-4">Diagnóstico Operativo</h2>
+            <p class="text-slate-500 max-w-2xl mx-auto">Mapeo de los síntomas exactos que hoy actúan como cuellos de botella para la escalabilidad de Alfrutez. Haz clic para expandir y enfocar.</p>
+        </div>
+
+        <div id="diag-container" class="flex flex-wrap justify-center -mx-4">
+            
+            <div id="wrapper-diag1" class="diag-wrapper w-full md:w-1/2 lg:w-1/4 p-4 transition-all duration-500 ease-in-out origin-center">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 hover:shadow-xl hover:border-brand-primary/30 transition-all duration-300 flex flex-col group h-full">
+                    <button onclick="toggleCard('diag1')" class="w-full p-8 text-left focus:outline-none relative group-hover:bg-slate-50/50 transition-colors rounded-t-2xl cursor-pointer">
+                        <div class="absolute top-8 right-8 w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 group-hover:bg-brand-light transition-colors">
+                            <i data-feather="chevron-down" id="icon-diag1" class="text-slate-400 transition-transform duration-300"></i>
+                        </div>
+                        <div class="w-14 h-14 bg-brand-light rounded-xl flex items-center justify-center mb-6 group-hover:bg-brand-primary transition-colors">
+                            <i data-feather="users" class="text-brand-primary group-hover:text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-800 pr-8">Inestabilidad en el Talento Humano</h3>
+                    </button>
+                    <div id="content-diag1" class="max-h-0 overflow-hidden transition-all duration-500 ease-in-out opacity-0">
+                        <div class="px-8 pb-8 pt-2">
+                            <div class="w-full h-px bg-slate-100 mb-4"></div>
+                            <p class="text-slate-600 text-sm leading-relaxed">La renuncia constante de personal en bodega (recepción, selección, despacho) y de conductores frena la continuity operativa. Esto se deriva de una falta de reglas claras, procesos invisibles y fricciones en la supervisión.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="wrapper-diag2" class="diag-wrapper w-full md:w-1/2 lg:w-1/4 p-4 transition-all duration-500 ease-in-out origin-center">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 hover:shadow-xl hover:border-brand-primary/30 transition-all duration-300 flex flex-col group h-full">
+                    <button onclick="toggleCard('diag2')" class="w-full p-8 text-left focus:outline-none relative group-hover:bg-slate-50/50 transition-colors rounded-t-2xl cursor-pointer">
+                        <div class="absolute top-8 right-8 w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 group-hover:bg-brand-light transition-colors">
+                            <i data-feather="chevron-down" id="icon-diag2" class="text-slate-400 transition-transform duration-300"></i>
+                        </div>
+                        <div class="w-14 h-14 bg-brand-light rounded-xl flex items-center justify-center mb-6 group-hover:bg-brand-primary transition-colors">
+                            <i data-feather="database" class="text-brand-primary group-hover:text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-800 pr-8">Vulnerabilidad Tecnológica</h3>
+                    </button>
+                    <div id="content-diag2" class="max-h-0 overflow-hidden transition-all duration-500 ease-in-out opacity-0">
+                        <div class="px-8 pb-8 pt-2">
+                            <div class="w-full h-px bg-slate-100 mb-4"></div>
+                            <p class="text-slate-600 text-sm leading-relaxed">Operar la contabilidad, las finanzas y los inventarios en Excel, sumado a recibir pedidos por WhatsApp de forma centralizada en el dueño, genera un cuello de botella crítico, no hay trazabilidad, pérdida de información y un alto riesgo de errores humanos. Nadie sabe cómo se hacen las cosas si falta una pieza clave. No existen dashboards que permitan analizar indicadores, impidiendo predecir comportamientos claves del negocio.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="wrapper-diag3" class="diag-wrapper w-full md:w-1/2 lg:w-1/4 p-4 transition-all duration-500 ease-in-out origin-center">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 hover:shadow-xl hover:border-brand-primary/30 transition-all duration-300 flex flex-col group h-full">
+                    <button onclick="toggleCard('diag3')" class="w-full p-8 text-left focus:outline-none relative group-hover:bg-slate-50/50 transition-colors rounded-t-2xl cursor-pointer">
+                        <div class="absolute top-8 right-8 w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 group-hover:bg-brand-light transition-colors">
+                            <i data-feather="chevron-down" id="icon-diag3" class="text-slate-400 transition-transform duration-300"></i>
+                        </div>
+                        <div class="w-14 h-14 bg-brand-light rounded-xl flex items-center justify-center mb-6 group-hover:bg-brand-primary transition-colors">
+                            <i data-feather="map" class="text-brand-primary group-hover:text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-800 pr-8">Puntos Ciegos Logísticos</h3>
+                    </button>
+                    <div id="content-diag3" class="max-h-0 overflow-hidden transition-all duration-500 ease-in-out opacity-0">
+                        <div class="px-8 pb-8 pt-2">
+                            <div class="w-full h-px bg-slate-100 mb-4"></div>
+                            <p class="text-slate-600 text-sm leading-relaxed">La ausencia de rutas inteligentes incrementa los costos de distribución. La falta de integración financiera impide conocer los márgenes reales en tiempo real, operando sin tableros de control (dashboards) para la toma de decisiones.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="wrapper-diag4" class="diag-wrapper w-full md:w-1/2 lg:w-1/4 p-4 transition-all duration-500 ease-in-out origin-center">
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 hover:shadow-xl hover:border-brand-primary/30 transition-all duration-300 flex flex-col group h-full">
+                    <button onclick="toggleCard('diag4')" class="w-full p-8 text-left focus:outline-none relative group-hover:bg-slate-50/50 transition-colors rounded-t-2xl cursor-pointer">
+                        <div class="absolute top-8 right-8 w-8 h-8 flex items-center justify-center rounded-full bg-slate-50 group-hover:bg-brand-light transition-colors">
+                            <i data-feather="chevron-down" id="icon-diag4" class="text-slate-400 transition-transform duration-300"></i>
+                        </div>
+                        <div class="w-14 h-14 bg-brand-light rounded-xl flex items-center justify-center mb-6 group-hover:bg-brand-primary transition-colors">
+                            <i data-feather="trending-down" class="text-brand-primary group-hover:text-white"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-slate-800 pr-8">Suboptimización Escencia Viva</h3>
+                    </button>
+                    <div id="content-diag4" class="max-h-0 overflow-hidden transition-all duration-500 ease-in-out opacity-0">
+                        <div class="px-8 pb-8 pt-2">
+                            <div class="w-full h-px bg-slate-100 mb-4"></div>
+                            <p class="text-slate-600 text-sm leading-relaxed">Una línea de guacamole de alta calidad que se encuentra frenada por la falta de una identidad comercial robusta, canales digitales propios y una estrategia de marketing orientada a la conversión.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="solucion" class="py-20 px-6 bg-white border-t border-slate-100">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-12">
+                <h2 class="text-3xl md:text-4xl font-bold text-brand-dark mb-4">Solución Integral en 6 Fases</h2>
+                <p class="text-slate-500 max-w-2xl mx-auto">Un sistema vivo y automatizado que empodera al equipo y blinda la operación a lo largo de 16 semanas.</p>
+            </div>
+
+            <div class="flex overflow-x-auto no-scrollbar space-x-2 border-b border-slate-200 mb-8 pb-2">
+                <button onclick="openTab(event, 'fase1')" class="tab-btn px-6 py-3 text-sm font-semibold rounded-t-lg bg-brand-light text-brand-primary border-b-2 border-brand-primary whitespace-nowrap transition-colors">1. Inmersión Diagnóstica <span class="font-bold text-xs opacity-75">(Sem 1)</span></button>
+                <button onclick="openTab(event, 'fase2')" class="tab-btn px-6 py-3 text-sm font-semibold text-slate-500 hover:text-brand-primary whitespace-nowrap transition-colors">2. Arquitectura & Escalamiento <span class="font-bold text-xs opacity-75">(Sem 2 - 5)</span></button>
+                <button onclick="openTab(event, 'fase3')" class="tab-btn px-6 py-3 text-sm font-semibold text-slate-500 hover:text-brand-primary whitespace-nowrap transition-colors">3. Sistema Operativo (ERP) <span class="font-bold text-xs opacity-75">(Sem 6 - 10)</span></button>
+                <button onclick="openTab(event, 'fase4')" class="tab-btn px-6 py-3 text-sm font-semibold text-slate-500 hover:text-brand-primary whitespace-nowrap transition-colors">4. Inteligencia Logística <span class="font-bold text-xs opacity-75">(Sem 11 - 13)</span></button>
+                <button onclick="openTab(event, 'fase5')" class="tab-btn px-6 py-3 text-sm font-semibold text-slate-500 hover:text-brand-primary whitespace-nowrap transition-colors">5. Transformación Digital <span class="font-bold text-xs opacity-75">(Sem 14 - 16)</span></button>
+                <button onclick="openTab(event, 'fase6')" class="tab-btn px-6 py-3 text-sm font-semibold text-slate-500 hover:text-brand-primary whitespace-nowrap transition-colors">6. Rescate Escencia Viva <span class="font-bold text-xs opacity-75">(Sem 5 - 16)</span></button>
+            </div>
+
+            <div class="bg-slate-50 p-8 rounded-2xl border border-slate-100 shadow-inner">
+                <div id="fase1" class="tab-content active">
+                    <h3 class="text-2xl font-bold text-brand-dark mb-4 flex items-center">
+                        <i data-feather="search" class="mr-3 text-brand-primary"></i> 
+                        Fase 1: Inmersión Diagnóstica In-House <span class="text-brand-accent ml-2 text-xl">(Semana 1)</span>
+                    </h3>
+                    <p class="text-slate-600 mb-4">No se puede arreglar lo que no se vive. Antes de implementar tecnología, pasaremos una semana integrados en la operación real de Alfrutez.</p>
+                    <ul class="space-y-3">
+                        <li class="flex items-start"><i data-feather="check-circle" class="w-5 h-5 text-brand-accent mr-3 mt-0.5 flex-shrink-0"></i><span class="text-slate-700"><strong>Auditoría de Trincheras:</strong> Observación de procesos en la bodega (recepción, selección, despacho).</span></li>
+                        <li class="flex items-start"><i data-feather="check-circle" class="w-5 h-5 text-brand-accent mr-3 mt-0.5 flex-shrink-0"></i><span class="text-slate-700"><strong>Trabajo de Campo Logístico:</strong> Acompañamiento en camiones con conductores para mapear fricciones y tiempos muertos.</span></li>
+                        <li class="flex items-start"><i data-feather="check-circle" class="w-5 h-5 text-brand-accent mr-3 mt-0.5 flex-shrink-0"></i><span class="text-slate-700"><strong>Entrevistas 360º:</strong> Sesiones confidenciales con personal operativo para entender bloqueos diarios.</span></li>
+                    </ul>
+                </div>
+                <div id="fase2" class="tab-content">
+                    <h3 class="text-2xl font-bold text-brand-dark mb-4 flex items-center">
+                        <i data-feather="git-merge" class="mr-3 text-brand-primary"></i> 
+                        Fase 2: Arquitectura y Escalamiento <span class="text-brand-accent ml-2 text-xl">(Semanas 2 - 5)</span>
+                    </h3>
+                    <p class="text-slate-600 mb-4">Diseño de una estructura a prueba de rotación utilizando metodologías de optimización.</p>
+                    <ul class="space-y-3">
+                        <li class="flex items-start"><i data-feather="check-circle" class="w-5 h-5 text-brand-accent mr-3 mt-0.5 flex-shrink-0"></i><span class="text-slate-700"><strong>Rol "Comodín":</strong> Operario transversal entrenado en todos los procesos para cubrir vacantes sin detener la operación.</span></li>
+                        <li class="flex items-start"><i data-feather="check-circle" class="w-5 h-5 text-brand-accent mr-3 mt-0.5 flex-shrink-0"></i><span class="text-slate-700"><strong>Documentación Ágil con IA:</strong> Sistema "Just Enough, Just in Time". El equipo documenta en 5 min tras resolver un problema (Problema > Solución > Foto). Nada de novelas.</span></li>
+                        <li class="flex items-start"><i data-feather="check-circle" class="w-5 h-5 text-brand-accent mr-3 mt-0.5 flex-shrink-0"></i><span class="text-slate-700"><strong>Escalamiento de Equipos:</strong> Contratación predecible, integración acelerada (onboarding en semanas) y formación de células autónomas.</span></li>
+                    </ul>
+                </div>
+                <div id="fase3" class="tab-content">
+                    <h3 class="text-2xl font-bold text-brand-dark mb-4 flex items-center">
+                        <i data-feather="server" class="mr-3 text-brand-primary"></i> 
+                        Fase 3: Sistema Operativo y Tecnológico (ERP) <span class="text-brand-accent ml-2 text-xl">(Semanas 6 - 10)</span>
+                    </h3>
+                    <p class="text-slate-600 mb-4">Migración de la "era del Excel" a un entorno unificado y automatizado.</p>
+                    <ul class="space-y-3">
+                        <li class="flex items-start"><i data-feather="check-circle" class="w-5 h-5 text-brand-accent mr-3 mt-0.5 flex-shrink-0"></i><span class="text-slate-700"><strong>Control de Inventarios:</strong> Trazabilidad en tiempo real de mermas, lotes y estados de maduración del aguacate.</span></li>
+                        <li class="flex items-start"><i data-feather="check-circle" class="w-5 h-5 text-brand-accent mr-3 mt-0.5 flex-shrink-0"></i><span class="text-slate-700"><strong>Integración Financiera:</strong> Contabilidad alimentada automáticamente por compras y ventas sin digitación manual doble.</span></li>
+                        <li class="flex items-start"><i data-feather="check-circle" class="w-5 h-5 text-brand-accent mr-3 mt-0.5 flex-shrink-0"></i><span class="text-slate-700"><strong>Dashboard Gerencial (BI):</strong> Tableros de control con márgenes, rotación y rentabilidad para decisiones basadas en datos.</span></li>
+                    </ul>
+                </div>
+                <div id="fase4" class="tab-content">
+                    <h3 class="text-2xl font-bold text-brand-dark mb-4 flex items-center">
+                        <i data-feather="truck" class="mr-3 text-brand-primary"></i> 
+                        Fase 4: Inteligencia Logística y Automatizaciones <span class="text-brand-accent ml-2 text-xl">(Semanas 11 - 13)</span>
+                    </h3>
+                    <p class="text-slate-600 mb-4">Eficiencia en movimiento para reducir costos operativos y tiempos muertos.</p>
+                    <ul class="space-y-3">
+                        <li class="flex items-start"><i data-feather="check-circle" class="w-5 h-5 text-brand-accent mr-3 mt-0.5 flex-shrink-0"></i><span class="text-slate-700"><strong>Rutas Inteligentes:</strong> Software de ruteo dinámico móvil que calcula secuencias óptimas según tráfico y ventanas horarias.</span></li>
+                        <li class="flex items-start"><i data-feather="check-circle" class="w-5 h-5 text-brand-accent mr-3 mt-0.5 flex-shrink-0"></i><span class="text-slate-700"><strong>Workflows Automáticos:</strong> Alertas de stock bajo para disparar órdenes de compra internamente.</span></li>
+                        <li class="flex items-start"><i data-feather="check-circle" class="w-5 h-5 text-brand-accent mr-3 mt-0.5 flex-shrink-0"></i><span class="text-slate-700"><strong>Notificaciones al Cliente:</strong> Avisos de "pedido en ruta" automáticos vía SMS/canales corporativos.</span></li>
+                    </ul>
+                </div>
+                <div id="fase5" class="tab-content">
+                    <h3 class="text-2xl font-bold text-brand-dark mb-4 flex items-center">
+                        <i data-feather="monitor" class="mr-3 text-brand-primary"></i> 
+                        Fase 5: Transformación Digital Comercial <span class="text-brand-accent ml-2 text-xl">(Semanas 14 - 16)</span>
+                    </h3>
+                    <p class="text-slate-600 mb-4">Preparación de la infraestructura para escalar la demanda y reemplazar el WhatsApp.</p>
+                    <ul class="space-y-3">
+                        <li class="flex items-start"><i data-feather="check-circle" class="w-5 h-5 text-brand-accent mr-3 mt-0.5 flex-shrink-0"></i><span class="text-slate-700"><strong>Plataforma Web B2B:</strong> Sitio institucional con portal integrado para que los clientes compren de forma autónoma.</span></li>
+                        <li class="flex items-start"><i data-feather="check-circle" class="w-5 h-5 text-brand-accent mr-3 mt-0.5 flex-shrink-0"></i><span class="text-slate-700"><strong>Pronóstico de Demanda:</strong> Modelos predictivos con data histórica para anticipar pedidos y reducir desperdicio de fruta.</span></li>
+                    </ul>
+                </div>
+                <div id="fase6" class="tab-content">
+                    <h3 class="text-2xl font-bold text-brand-dark mb-4 flex items-center">
+                        <i data-feather="star" class="mr-3 text-brand-primary"></i> 
+                        Fase 6: Rescate de Escencia Viva <span class="text-brand-accent ml-2 text-xl">(Semanas 5 - 16)</span>
+                    </h3>
+                    <p class="text-slate-600 mb-4">Aceleración del negocio de guacamole natural de alto valor (Track ejecutado en paralelo).</p>
+                    <ul class="space-y-3">
+                        <li class="flex items-start"><i data-feather="check-circle" class="w-5 h-5 text-brand-accent mr-3 mt-0.5 flex-shrink-0"></i><span class="text-slate-700"><strong>Rebranding Estratégico:</strong> Identidad visual, empaques y posicionamiento 100% natural.</span></li>
+                        <li class="flex items-start"><i data-feather="check-circle" class="w-5 h-5 text-brand-accent mr-3 mt-0.5 flex-shrink-0"></i><span class="text-slate-700"><strong>Landing Exclusiva:</strong> Ecosistema web orientado a la conversión para retail y B2B.</span></li>
+                        <li class="flex items-start"><i data-feather="check-circle" class="w-5 h-5 text-brand-accent mr-3 mt-0.5 flex-shrink-0"></i><span class="text-slate-700"><strong>Growth Marketing:</strong> Embudos de venta, pauta digital hiperlocal (Meta/Google Ads) con medición de CAC y LTV.</span></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- NUEVO APARTADO: INMERSIÓN DIAGNÓSTICA -->
+    <section id="inmersion-detalle" class="py-20 px-6 bg-slate-50 border-t border-slate-200">
+        <div class="max-w-7xl mx-auto">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-bold text-brand-dark mb-4">Fase 1: Inmersión Diagnóstica In-House</h2>
+                <p class="text-slate-500 max-w-2xl mx-auto">Conoce nuestras metodologías de campo estructuradas para auditar la operación real antes de implementar la tecnología.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+                <!-- Tarjeta 1 -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-8 hover:shadow-xl hover:border-brand-primary/30 transition-all duration-300 flex flex-col group">
+                    <div class="w-14 h-14 bg-brand-light rounded-xl flex items-center justify-center mb-6 group-hover:bg-brand-primary transition-colors duration-300">
+                        <i data-feather="clipboard" class="text-brand-primary group-hover:text-white transition-colors duration-300"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-3">Auditoría de Trincheras</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">Observación de procesos en la bodega (recepción, selección, despacho).</p>
+                </div>
+                
+                <!-- Tarjeta 2 -->
+                <div class="bg-white rounded-2xl shadow-sm border border-slate-100 p-8 hover:shadow-xl hover:border-brand-primary/30 transition-all duration-300 flex flex-col group">
+                    <div class="w-14 h-14 bg-brand-light rounded-xl flex items-center justify-center mb-6 group-hover:bg-brand-primary transition-colors duration-300">
+                        <i data-feather="truck" class="text-brand-primary group-hover:text-white transition-colors duration-300"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-3">Trabajo de Campo Logístico</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed">Acompañamiento en camiones con conductores para mapear fricciones y tiempos muertos.</p>
+                </div>
+
+                <!-- Tarjeta 3 (Interactiva) -->
+                <div onclick="toggleEntrevistasBlock()" class="bg-white rounded-2xl shadow-sm border border-brand-primary/20 p-8 hover:shadow-xl hover:border-brand-primary/60 transition-all duration-300 flex flex-col group cursor-pointer relative overflow-hidden">
+                    <div class="absolute top-0 right-0 w-20 h-20 bg-brand-light rounded-bl-full -mr-10 -mt-10 group-hover:bg-brand-primary/10 transition-colors"></div>
+                    <div class="w-14 h-14 bg-brand-light rounded-xl flex items-center justify-center mb-6 group-hover:bg-brand-primary transition-colors duration-300 relative z-10">
+                        <i data-feather="users" class="text-brand-primary group-hover:text-white transition-colors duration-300"></i>
+                    </div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-3 group-hover:text-brand-primary transition-colors relative z-10">Entrevistas 360º</h3>
+                    <p class="text-slate-600 text-sm leading-relaxed relative z-10">Sesiones confidenciales con personal operativo para entender bloqueos diarios.</p>
+                    <div class="mt-auto pt-6 relative z-10">
+                        <span class="inline-flex items-center text-xs font-bold uppercase tracking-wider text-brand-primary group-hover:text-brand-accent transition-colors">
+                            Ver detalles y perfiles <i data-feather="arrow-right" class="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTENEDOR DESPLEGABLE: Entrevistas 360º -->
+            <div id="entrevistas-container" class="hidden transition-all duration-500 ease-in-out">
+                <div class="text-center mb-8 mt-16 border-t border-slate-200 pt-16">
+                    <h2 class="text-3xl font-bold text-brand-dark mb-4">Entrevistas 360º</h2>
+                    <p class="text-slate-500 max-w-2xl mx-auto">Perfiles detallados y hallazgos estructurados extraídos directamente de las trincheras operativas.</p>
+                </div>
+
+                <!-- Replicando la estética de la sección Solución -->
+                <div class="flex overflow-x-auto no-scrollbar space-x-2 border-b border-slate-200 mb-8 pb-2">
+                    <button onclick="openEntrevistaTab(event, 'tab-yamir')" class="entrevista-tab-btn px-6 py-3 text-sm font-semibold rounded-t-lg bg-brand-light text-brand-primary border-b-2 border-brand-primary whitespace-nowrap transition-colors flex items-center">
+                        <i data-feather="user" class="w-4 h-4 mr-2"></i> Yamir Ortiz
+                    </button>
+                    <!-- Espacio para futuras adiciones -->
+                    <button class="px-6 py-3 text-sm font-semibold text-slate-400 cursor-not-allowed whitespace-nowrap flex items-center">
+                        <i data-feather="plus" class="w-4 h-4 mr-1"></i> Añadir Perfil
+                    </button>
+                </div>
+
+                <div class="bg-slate-50 p-6 md:p-8 rounded-2xl border border-slate-100 shadow-inner">
+                    <!-- Tab Yamir Ortiz -->
+                    <div id="tab-yamir" class="entrevista-tab-content block opacity-100 transition-opacity duration-300">
+                        <h3 class="text-2xl font-bold text-brand-dark mb-6 flex items-center">
+                            Perfil Evaluado: Yamir Ortiz
+                        </h3>
+                        
+                        <!-- Sistema de Acordeones -->
+                        <div class="space-y-4">
+                            <!-- Acordeón 1 -->
+                            <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm hover:border-brand-primary/30 transition-colors">
+                                <button onclick="toggleFaq('acord-1')" class="w-full flex justify-between items-center p-5 text-left focus:outline-none hover:bg-slate-50 transition-colors group">
+                                    <span class="font-bold text-slate-800 group-hover:text-brand-primary transition-colors">Datos Personales y Demográficos</span>
+                                    <i data-feather="chevron-down" id="icon-acord-1" class="text-slate-400 transition-transform duration-300 flex-shrink-0 ml-4"></i>
+                                </button>
+                                <div id="acord-1" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out opacity-0">
+                                    <div class="p-5 pt-0 text-slate-600 text-sm border-t border-slate-100 mt-2">
+                                        <p class="pt-3"><em>[Información pendiente de documentar sobre los datos personales y demográficos de Yamir]</em></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Acordeón 2 -->
+                            <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm hover:border-brand-primary/30 transition-colors">
+                                <button onclick="toggleFaq('acord-2')" class="w-full flex justify-between items-center p-5 text-left focus:outline-none hover:bg-slate-50 transition-colors group">
+                                    <span class="font-bold text-slate-800 group-hover:text-brand-primary transition-colors">Cargo y funciones dentro de Alfrutez</span>
+                                    <i data-feather="chevron-down" id="icon-acord-2" class="text-slate-400 transition-transform duration-300 flex-shrink-0 ml-4"></i>
+                                </button>
+                                <div id="acord-2" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out opacity-0">
+                                    <div class="p-5 pt-0 text-slate-600 text-sm border-t border-slate-100 mt-2">
+                                        <p class="pt-3"><em>[Detalle operativo de responsabilidades y flujo de trabajo actual de Yamir]</em></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Acordeón 3 -->
+                            <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm hover:border-brand-primary/30 transition-colors">
+                                <button onclick="toggleFaq('acord-3')" class="w-full flex justify-between items-center p-5 text-left focus:outline-none hover:bg-slate-50 transition-colors group">
+                                    <span class="font-bold text-slate-800 group-hover:text-brand-primary transition-colors">Dolores</span>
+                                    <i data-feather="chevron-down" id="icon-acord-3" class="text-slate-400 transition-transform duration-300 flex-shrink-0 ml-4"></i>
+                                </button>
+                                <div id="acord-3" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out opacity-0">
+                                    <div class="p-5 pt-0 text-slate-600 text-sm border-t border-slate-100 mt-2">
+                                        <p class="pt-3"><em>[Registro de fricciones, cuellos de botella y frustraciones mapeadas durante la entrevista]</em></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Acordeón 4 -->
+                            <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm hover:border-brand-primary/30 transition-colors">
+                                <button onclick="toggleFaq('acord-4')" class="w-full flex justify-between items-center p-5 text-left focus:outline-none hover:bg-slate-50 transition-colors group">
+                                    <span class="font-bold text-slate-800 group-hover:text-brand-primary transition-colors">Planes de acción</span>
+                                    <i data-feather="chevron-down" id="icon-acord-4" class="text-slate-400 transition-transform duration-300 flex-shrink-0 ml-4"></i>
+                                </button>
+                                <div id="acord-4" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out opacity-0">
+                                    <div class="p-5 pt-0 text-slate-600 text-sm border-t border-slate-100 mt-2">
+                                        <p class="pt-3"><em>[Estrategias y tácticas a ejecutar para solventar los dolores y optimizar sus funciones]</em></p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Acordeón 5 -->
+                            <div class="bg-white border border-slate-200 rounded-xl overflow-hidden shadow-sm hover:border-brand-primary/30 transition-colors">
+                                <button onclick="toggleFaq('acord-5')" class="w-full flex justify-between items-center p-5 text-left focus:outline-none hover:bg-slate-50 transition-colors group">
+                                    <span class="font-bold text-slate-800 group-hover:text-brand-primary transition-colors">Propuestas</span>
+                                    <i data-feather="chevron-down" id="icon-acord-5" class="text-slate-400 transition-transform duration-300 flex-shrink-0 ml-4"></i>
+                                </button>
+                                <div id="acord-5" class="max-h-0 overflow-hidden transition-all duration-300 ease-in-out opacity-0">
+                                    <div class="p-5 pt-0 text-slate-600 text-sm border-t border-slate-100 mt-2">
+                                        <p class="pt-3"><em>[Ideas de mejora, solicitudes de herramientas o sugerencias elevadas por Yamir]</em></p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-20 px-6 max-w-7xl mx-auto">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold text-brand-dark mb-4">Matriz de Ejecución Concurrente (4 Meses)</h2>
+            <p class="text-slate-500 max-w-3xl mx-auto">Maximizamos la eficiencia ejecutando 4 Tracks en paralelo. La formación es el eje transversal que habilita el éxito tecnológico y operativo.</p>
+        </div>
+
+        <div class="bg-white p-6 md:p-8 rounded-2xl shadow-lg border border-slate-200 overflow-x-auto">
+            <div class="min-w-[800px]">
+                <div class="grid grid-cols-12 gap-4 mb-4 border-b border-slate-200 pb-4 text-sm font-bold text-slate-500 uppercase tracking-wide">
+                    <div class="col-span-3">Tracks de Trabajo</div>
+                    <div class="col-span-2 text-center border-l border-slate-100">Mes 1</div>
+                    <div class="col-span-2 text-center border-l border-slate-100">Mes 2</div>
+                    <div class="col-span-2 text-center border-l border-slate-100">Mes 3</div>
+                    <div class="col-span-3 text-center border-l border-slate-100">Mes 4</div>
+                </div>
+
+                <div class="grid grid-cols-12 gap-4 items-center mb-6 relative">
+                    <div class="col-span-3 font-semibold text-slate-800 text-sm">A: Procesos & Cultura</div>
+                    <div class="col-span-9 relative h-10 bg-slate-100 rounded-lg overflow-hidden">
+                        <div class="absolute top-0 left-0 h-full bg-brand-primary opacity-90 rounded-lg w-full flex items-center px-4 text-xs font-medium text-white shadow-sm">
+                            Inmersión In-House → Doc. Ágil (5 min) → Contratación Predecible → Equipos Autónomos
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-12 gap-4 items-center mb-6 relative">
+                    <div class="col-span-3 font-semibold text-slate-800 text-sm">B: Tecnología (ERP)</div>
+                    <div class="col-span-9 relative h-10 bg-slate-100 rounded-lg overflow-hidden">
+                        <div class="absolute top-0 left-0 h-full bg-slate-700 opacity-90 rounded-lg w-[85%] flex items-center px-4 text-xs font-medium text-white shadow-sm">
+                            Arquitectura BD → Desarrollo ERP → Go-Live ERP & Rutas → Dashboards BI
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-12 gap-4 items-center mb-6 relative">
+                    <div class="col-span-3 font-semibold text-slate-800 text-sm">C: Ecosistema Comercial</div>
+                    <div class="col-span-9 relative h-10 bg-slate-100 rounded-lg overflow-hidden">
+                        <div class="absolute top-0 left-[10%] h-full bg-brand-accent opacity-90 rounded-lg w-[90%] flex items-center px-4 text-xs font-medium text-white shadow-sm">
+                            Auditoría de Marca → Rebranding Escencia → Web Alfrutez & Portal → Growth Marketing
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-12 gap-4 items-center mb-4 relative">
+                    <div class="col-span-3 font-semibold text-brand-primary text-sm flex items-center"><i data-feather="zap" class="w-4 h-4 mr-1"></i> D: Formación (Transversal)</div>
+                    <div class="col-span-9 relative h-10 bg-brand-light border border-brand-primary/20 rounded-lg overflow-hidden">
+                        <div class="absolute top-0 left-0 h-full bg-transparent w-full flex items-center justify-between px-4 text-xs font-bold text-brand-dark">
+                            <span>Alineación & Comodín</span>
+                            <span>Clínica Liderazgo</span>
+                            <span>Bootcamp ERP/Rutas</span>
+                            <span>Transferencia BI</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-12 gap-4 mt-8 pt-6 border-t border-slate-200">
+                    <div class="col-span-3 text-xs text-slate-400 font-bold uppercase text-right pr-4">Hitos Clave</div>
+                    <div class="col-span-2 text-xs font-medium text-slate-700 px-2 border-l-2 border-brand-primary/50">Planos y Alineación</div>
+                    <div class="col-span-2 text-xs font-medium text-slate-700 px-2 border-l-2 border-brand-primary/50">Identidad y Playbooks</div>
+                    <div class="col-span-2 text-xs font-medium text-slate-700 px-2 border-l-2 border-brand-primary/50">Encendido Técnico/Operativo</div>
+                    <div class="col-span-3 text-xs font-medium text-slate-700 px-2 border-l-2 border-brand-accent">Control Absoluto (Operación Blindada)</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-20 px-6 bg-brand-dark text-white">
+        <div class="max-w-7xl mx-auto">
+            <h2 class="text-3xl md:text-4xl font-bold mb-12 text-center">Beneficios Cuantificables Esperados</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 text-center">
+                <div class="p-6 border border-white/10 rounded-2xl bg-white/5 backdrop-blur-sm">
+                    <div class="text-5xl font-extrabold text-brand-accent mb-2">99%</div>
+                    <h4 class="text-lg font-bold mb-2">Operación Blindada</h4>
+                    <p class="text-sm text-slate-300">El impacto operativo de una renuncia se reduce a casi cero gracias al "Comodín" y documentación ágil.</p>
+                </div>
+                <div class="p-6 border border-white/10 rounded-2xl bg-white/5 backdrop-blur-sm">
+                    <div class="text-5xl font-extrabold text-brand-accent mb-2">90%</div>
+                    <h4 class="text-lg font-bold mb-2">Menos Carga Manual</h4>
+                    <p class="text-sm text-slate-300">Eliminación del trabajo operativo en la toma de pedidos, dejando atrás el Excel y WhatsApp.</p>
+                </div>
+                <div class="p-6 border border-white/10 rounded-2xl bg-white/5 backdrop-blur-sm">
+                    <div class="text-5xl font-extrabold text-brand-accent mb-2">25%</div>
+                    <h4 class="text-lg font-bold mb-2">Ahorro Logístico</h4>
+                    <p class="text-sm text-slate-300">Disminución en costos de transporte y tiempos de entrega mediante rutas inteligentes.</p>
+                </div>
+                <div class="p-6 border border-white/10 rounded-2xl bg-white/5 backdrop-blur-sm">
+                    <div class="text-5xl font-extrabold text-brand-accent mb-2">100%</div>
+                    <h4 class="text-lg font-bold mb-2">Visibilidad de Datos</h4>
+                    <p class="text-sm text-slate-300">Toma de decisiones de valor con tableros financieros y operativos en tiempo real.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="py-20 px-6 max-w-4xl mx-auto">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-4xl font-bold text-brand-dark mb-4">Estructura de Inversión</h2>
+            <p class="text-slate-500">Modelo híbrido transparente que incluye ejecución concurrente, licenciamiento técnico y formación continua.</p>
+        </div>
+
+        <div class="bg-white rounded-3xl shadow-2xl overflow-hidden border border-slate-100 flex flex-col md:flex-row">
+            <div class="p-10 md:w-2/3">
+                <h3 class="text-xl font-bold text-slate-800 mb-6">Desglose Mensual del Proyecto</h3>
+                
+                <div class="mb-6 pb-6 border-b border-slate-100 flex justify-between items-center">
+                    <div>
+                        <h4 class="font-semibold text-slate-800 flex items-center"><i data-feather="briefcase" class="w-4 h-4 mr-2 text-brand-primary"></i> Consultoría y Transformación</h4>
+                        <p class="text-sm text-slate-500 mt-1 max-w-sm">Diagnóstico in-house, metodologías de escalamiento, rebranding Escencia Viva y horas de formación transversal.</p>
+                    </div>
+                    <div class="text-right font-bold text-lg text-slate-700 whitespace-nowrap ml-4">
+                        $4.8 M <span class="text-xs font-normal text-slate-400">COP</span>
+                    </div>
+                </div>
+
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h4 class="font-semibold text-slate-800 flex items-center"><i data-feather="code" class="w-4 h-4 mr-2 text-brand-primary"></i> Desarrollo Software y Automatización</h4>
+                        <p class="text-sm text-slate-500 mt-1 max-w-sm">Programación ERP a la medida, rutas de IA, portal web de pedidos y flujos de trabajo automáticos.</p>
+                    </div>
+                    <div class="text-right font-bold text-lg text-slate-700 whitespace-nowrap ml-4">
+                        +$1.8 M <span class="text-xs font-normal text-slate-400">COP</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-brand-dark text-white p-10 md:w-1/3 flex flex-col justify-center items-center text-center">
+                <p class="text-brand-accent font-semibold tracking-wider uppercase text-xs mb-2">Inversión Mensual Total</p>
+                <div class="text-4xl md:text-5xl font-extrabold mb-2 text-white">$6.6<span class="text-2xl font-semibold">M</span></div>
+                <p class="text-slate-300 text-sm mb-6">COP / mes durante ejecución</p>
+                <p class="text-xs text-slate-400 italic">*No incluye impuestos aplicables.</p>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-slate-900 py-16 px-6 text-center border-t-4 border-brand-accent">
+        <div class="max-w-3xl mx-auto">
+            <h2 class="text-2xl font-bold text-white mb-6">Próximos Pasos</h2>
+            <div class="flex flex-col md:flex-row justify-center gap-4 mb-10 text-slate-300 text-sm text-left">
+                <div class="bg-white/10 p-4 rounded-xl flex-1 border border-white/5">
+                    <span class="text-brand-accent font-bold mb-1 block">1. Alineación</span>
+                    Sesión de 45 min para ajustar alcances técnicos.
+                </div>
+                <div class="bg-white/10 p-4 rounded-xl flex-1 border border-white/5">
+                    <span class="text-brand-accent font-bold mb-1 block">2. Inmersión</span>
+                    Agendamiento de la semana In-House en bodega.
+                </div>
+                <div class="bg-white/10 p-4 rounded-xl flex-1 border border-white/5">
+                    <span class="text-brand-accent font-bold mb-1 block">3. Kick-off</span>
+                    Firma de acuerdos e inicio con el equipo.
+                </div>
+            </div>
+            
+            <a href="mailto:tu-correo@ejemplo.com" class="inline-flex items-center justify-center bg-brand-primary hover:bg-brand-accent text-white font-bold py-4 px-8 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg shadow-brand-primary/40">
+                <i data-feather="calendar" class="mr-2"></i> Agendar Alineación Estratégica
+            </a>
+        </div>
+    </footer>
+
+    <script>
+        // Inicializar iconos
+        feather.replace();
+
+        // ----------------------------------------------------
+        // LÓGICA ORIGINAL: Navegación Pestañas Header a Solución
+        // ----------------------------------------------------
+        function navToTab(tabIndex) {
+            const tabBtns = document.getElementsByClassName("tab-btn");
+            if (tabBtns[tabIndex]) {
+                tabBtns[tabIndex].click();
+            }
+        }
+
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+
+        if(mobileBtn && mobileMenu) {
+            mobileBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+        }
+
+        function closeMobileMenu() {
+            if(mobileMenu) {
+                mobileMenu.classList.add('hidden');
+            }
+        }
+
+        // ----------------------------------------------------
+        // LÓGICA ORIGINAL: Acordeón Diagnóstico
+        // ----------------------------------------------------
+        function toggleCard(id) {
+            const allWrappers = document.querySelectorAll('.diag-wrapper');
+            const clickedWrapper = document.getElementById(`wrapper-${id}`);
+            const content = document.getElementById(`content-${id}`);
+            const icon = document.getElementById(`icon-${id}`);
+
+            const isActive = content.classList.contains('max-h-[800px]');
+
+            if (isActive) {
+                content.classList.add('max-h-0', 'opacity-0');
+                content.classList.remove('max-h-[800px]', 'opacity-100');
+                icon.classList.remove('rotate-180', 'text-brand-primary');
+                icon.classList.add('text-slate-400');
+
+                clickedWrapper.classList.remove('wrapper-expanded');
+
+                allWrappers.forEach(wrapper => {
+                    if (wrapper.id !== `wrapper-${id}`) {
+                        wrapper.classList.remove('hidden');
+                        setTimeout(() => {
+                            wrapper.classList.remove('wrapper-hidden');
+                        }, 20); 
+                    }
+                });
+
+            } else {
+                allWrappers.forEach(wrapper => {
+                    if (wrapper.id !== `wrapper-${id}`) {
+                        wrapper.classList.add('wrapper-hidden');
+                        setTimeout(() => {
+                            if (clickedWrapper.classList.contains('wrapper-expanded')) {
+                                wrapper.classList.add('hidden');
+                            }
+                        }, 500); 
+                    }
+                });
+
+                clickedWrapper.classList.add('wrapper-expanded');
+
+                content.classList.remove('max-h-0', 'opacity-0');
+                content.classList.add('max-h-[800px]', 'opacity-100');
+                icon.classList.add('rotate-180', 'text-brand-primary');
+                icon.classList.remove('text-slate-400');
+            }
+        }
+
+        // ----------------------------------------------------
+        // LÓGICA ORIGINAL: Pestañas de Solución
+        // ----------------------------------------------------
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            
+            tabcontent = document.getElementsByClassName("tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+                tabcontent[i].classList.remove("active");
+            }
+            
+            tablinks = document.getElementsByClassName("tab-btn");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" bg-brand-light text-brand-primary border-b-2 border-brand-primary", " text-slate-500 hover:text-brand-primary");
+            }
+            
+            document.getElementById(tabName).style.display = "block";
+            setTimeout(() => {
+                document.getElementById(tabName).classList.add("active");
+            }, 10);
+            
+            if (evt && evt.currentTarget) {
+                evt.currentTarget.className = evt.currentTarget.className.replace(" text-slate-500 hover:text-brand-primary", " bg-brand-light text-brand-primary border-b-2 border-brand-primary");
+            }
+        }
+
+        // ----------------------------------------------------
+        // LÓGICA NUEVA: Tarjeta "Entrevistas 360º" y Pestañas
+        // ----------------------------------------------------
+        function toggleEntrevistasBlock() {
+            const block = document.getElementById('entrevistas-container');
+            if (block.classList.contains('hidden')) {
+                block.classList.remove('hidden');
+                // Scroll suave a la sección
+                setTimeout(() => {
+                    block.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    // Refresh iconos
+                    feather.replace();
+                }, 50);
+            } else {
+                block.classList.add('hidden');
+            }
+        }
+
+        function openEntrevistaTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            
+            tabcontent = document.getElementsByClassName("entrevista-tab-content");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+                tabcontent[i].classList.remove("opacity-100");
+                tabcontent[i].classList.add("opacity-0");
+            }
+            
+            tablinks = document.getElementsByClassName("entrevista-tab-btn");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" bg-brand-light text-brand-primary border-b-2 border-brand-primary", " text-slate-500 hover:text-brand-primary");
+            }
+            
+            const selectedTab = document.getElementById(tabName);
+            selectedTab.style.display = "block";
+            
+            setTimeout(() => {
+                selectedTab.classList.remove("opacity-0");
+                selectedTab.classList.add("opacity-100");
+            }, 10);
+            
+            if (evt && evt.currentTarget) {
+                evt.currentTarget.className = evt.currentTarget.className.replace(" text-slate-500 hover:text-brand-primary", " bg-brand-light text-brand-primary border-b-2 border-brand-primary");
+            }
+        }
+
+        // ----------------------------------------------------
+        // LÓGICA NUEVA: Acordeones Internos de Yamir Ortiz
+        // ----------------------------------------------------
+        function toggleFaq(id) {
+            const content = document.getElementById(id);
+            const icon = document.getElementById(`icon-${id}`);
+            
+            if (content.classList.contains('max-h-0')) {
+                // Abrir
+                content.classList.remove('max-h-0', 'opacity-0');
+                content.classList.add('max-h-[1000px]', 'opacity-100');
+                icon.classList.add('rotate-180', 'text-brand-primary');
+                icon.classList.remove('text-slate-400');
+            } else {
+                // Cerrar
+                content.classList.add('max-h-0', 'opacity-0');
+                content.classList.remove('max-h-[1000px]', 'opacity-100');
+                icon.classList.remove('rotate-180', 'text-brand-primary');
+                icon.classList.add('text-slate-400');
+            }
+        }
+    </script>
+</body>
+</html>
